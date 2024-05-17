@@ -1,27 +1,28 @@
 <?php
 include_once 'conexion.php'; 
+
 if($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = $_POST['nombre'];
     $correo = $_POST['correo'];
     $contrasena = $_POST['contrasena'];
 
     // Obtener el último ID de usuario
-    $stmt = $conn->prepare("SELECT MAX(ID_Usuario) AS last_id FROM Usuario");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    $last_id = $row['last_id'];
+    $sql_last_id = "SELECT MAX(ID_Usuario) AS last_id FROM Usuario";
+    $stmt_last_id = sqlsrv_query($conn, $sql_last_id);
+    $row_last_id = sqlsrv_fetch_array($stmt_last_id, SQLSRV_FETCH_ASSOC);
+    $last_id = $row_last_id['last_id'];
     $next_id = $last_id + 1;
 
     // Insertar nuevo usuario en la base de datos
-    $stmt = $conn->prepare("INSERT INTO Usuario (ID_Usuario, Nombre, Correo, Contraseña) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("isss", $next_id, $nombre, $correo, $contrasena);
-    
-    if($stmt->execute()) {
+    $sql_insert = "INSERT INTO Usuario (ID_Usuario, Nombre, Correo, Contraseña) VALUES (?, ?, ?, ?)";
+    $params = array($next_id, $nombre, $correo, $contrasena);
+    $stmt_insert = sqlsrv_query($conn, $sql_insert, $params);
+
+    if($stmt_insert === false) {
+        die(print_r(sqlsrv_errors(), true));
+    } else {
         header("Location: index.php");
         exit;
-    } else {
-        $error = "Error al registrar el usuario";
     }
 }
 ?>
