@@ -4,7 +4,7 @@ CREATE TABLE Usuario(
 	ID_Usuario	INT,
 	Nombre		VARCHAR(30),
 	Correo		VARCHAR(30),
-	Contraseña	VARCHAR(30),
+	Contraseï¿½a	VARCHAR(30),
 	PRIMARY KEY(ID_Usuario),
 	UNIQUE(Correo),
 	UNIQUE(Nombre))
@@ -12,7 +12,7 @@ CREATE TABLE Usuario(
 CREATE TABLE Tipo_Evento(
 	ID_Tipo			INT,
 	Nombre_Evento	VARCHAR(30),
-	Frecuencia		CHAR(1),
+	Frecuencia		CHAR(1) CHECK (Frecuencia IN('U','D','S','M','A')),
 	ID_Usuario		INT NOT NULL,
 	PRIMARY KEY(ID_Tipo),
 	FOREIGN KEY(ID_Usuario) REFERENCES Usuario(ID_Usuario))
