@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Tipo de Evento</title>
+</head>
+<body>
+    <h2>Modificar Tipo de Evento</h2>
+    <form action="modificar_tipoEvento.php" method="POST">
+        <label for="nombre_evento_actual">Nombre del Evento Actual:</label><br>
+        <input type="text" id="nombre_evento_actual" name="nombre_evento_actual" required><br>
+        
+        <label for="nuevo_nombre_evento">Nuevo Nombre del Evento:</label><br>
+        <input type="text" id="nuevo_nombre_evento" name="nuevo_nombre_evento" required><br>
+        
+        <label for="nueva_frecuencia">Nueva Frecuencia:</label><br>
+        <select id="nueva_frecuencia" name="nueva_frecuencia" required>
+            <option value="">Selecciona una nueva frecuencia</option>
+            <option value="A">Anual</option>
+            <option value="M">Mensual</option>
+            <option value="S">Semanal</option>
+            <option value="D">Diario</option>
+        </select><br><br>
+        
+        <input type="submit" value="Modificar Evento">
+    </form>
+</body>
+</html>
