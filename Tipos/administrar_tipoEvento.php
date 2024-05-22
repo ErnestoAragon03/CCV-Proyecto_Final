@@ -1,4 +1,11 @@
 <?php
+session_start();
+
+$notification = "";
+if (isset($_SESSION['notification'])) {
+    $notification = $_SESSION['notification'];
+    unset($_SESSION['notification']); // Elimina la notificación de la sesión
+}
 // Verifica que se haya enviado el ID de Usuario como parámetro POST
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_usuario'])) {
     $id_usuario = $_POST['id_usuario'];

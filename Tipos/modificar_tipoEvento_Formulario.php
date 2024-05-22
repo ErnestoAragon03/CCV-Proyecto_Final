@@ -1,4 +1,7 @@
 <?php
+session_start();
+
+$update_successful = false;
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_tipo']) && isset($_POST['nombre_evento']) && isset($_POST['frecuencia'])) {
     // Procesar el formulario enviado para modificar el tipo de evento
     $id_tipo = htmlspecialchars($_POST['id_tipo']);
@@ -23,7 +26,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_tipo']) && isset($_
     if ($stmt === false) {
         die(print_r(sqlsrv_errors(), true));
     } else {
-        echo "Tipo de evento actualizado correctamente.";
+        $_SESSION['notification'] = "El tipo de evento se ha actualizado correctamente.";
+        header('Location: administrar_tipoEvento.php');
+        exit();
     }
     
     sqlsrv_free_stmt($stmt);
@@ -84,7 +89,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_tipo']) && isset($_
     <script>
         function prefillPlaceholders() {
             var nombreEventoInput = document.getElementById('nombre_evento');
-
             if (nombreEventoInput.value === "") {
                 nombreEventoInput.value = nombreEventoInput.placeholder;
             }
