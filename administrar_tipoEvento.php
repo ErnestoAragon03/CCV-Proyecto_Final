@@ -41,6 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_usuario'])) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Eventos</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -80,7 +81,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_usuario'])) {
             <input type="hidden" name="id_usuario" value="' . $id_usuario . '">
             <input type="submit" value="Crear Nuevo Evento">
           </form>';
-    echo '</body></html>';
+    echo '<footer>
+            <form action="ID_Usuario.html">
+                <input type="submit" value="Regresar">
+            </form>
+        </footer></body></html>';
 
     // Cerrar la conexión
     sqlsrv_close($conn);
