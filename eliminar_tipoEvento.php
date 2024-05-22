@@ -15,16 +15,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Obtener datos del formulario
-    $nombre_evento = $_POST['nombre_evento'];
+    $id_tipo = $_POST['id_tipo'];
 
-    // Validar que el nombre del evento no esté vacío
-    if (empty($nombre_evento)) {
-        die("Por favor, proporciona el nombre del evento a eliminar.");
+    // Validar que el id del evento no esté vacío
+    if (empty($id_tipo)) {
+        die("Tipo de evento no encontrado.");
     }
 
     // Eliminar el evento de la tabla Tipo_Evento
-    $sql = "DELETE FROM Tipo_Evento WHERE Nombre_Evento = ?";
-    $params = array($nombre_evento);
+    $sql = "DELETE FROM Tipo_Evento WHERE ID_Tipo = ?";
+    $params = array($id_tipo);
     $stmt = sqlsrv_query($conn, $sql, $params);
 
     if ($stmt === false) {
