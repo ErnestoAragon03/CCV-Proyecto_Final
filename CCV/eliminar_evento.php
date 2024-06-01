@@ -15,24 +15,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Obtener datos del formulario
-    $nombre_evento_actual = $_POST['nombre_evento_actual'];
-    $nuevo_nombre_evento = $_POST['nuevo_nombre_evento'];
-    $nueva_frecuencia = $_POST['nueva_frecuencia'];
+    $nombre_evento = $_POST['nombre_evento'];
 
-    // Validar que los campos no estén vacíos
-    if (empty($nombre_evento_actual) || empty($nuevo_nombre_evento) || empty($nueva_frecuencia)) {
-        die("Por favor, completa todos los campos.");
+    // Validar que el nombre del evento no esté vacío
+    if (empty($nombre_evento)) {
+        die("Por favor, proporciona el nombre del evento a eliminar.");
     }
 
-    // Modificar el evento en la tabla Tipo_Evento
-    $sql = "UPDATE Tipo_Evento SET Nombre_Evento = ?, Frecuencia = ? WHERE Nombre_Evento = ?";
-    $params = array($nuevo_nombre_evento, $nueva_frecuencia, $nombre_evento_actual);
+    // Eliminar el evento de la tabla Tipo_Evento
+    $sql = "DELETE FROM Tipo_Evento WHERE Nombre_Evento = ?";
+    $params = array($nombre_evento);
     $stmt = sqlsrv_query($conn, $sql, $params);
 
     if ($stmt === false) {
         die("Error al ejecutar la consulta: " . print_r(sqlsrv_errors(), true));
     } else {
-        echo "Evento modificado correctamente.";
+        echo "Evento eliminado correctamente.";
     }
 
     // Cerrar la conexión
