@@ -1,4 +1,14 @@
 <?php
+session_start();
+// Verifica si el ID de usuario está presente en la sesión
+if (!isset($_SESSION['id_usuario'])) {
+    // Si no está presente, redirige al usuario al login o maneja el error
+    header('Location: login.php');
+    exit();
+}
+$id_usuario = $_SESSION['id_usuario'];
+
+
 // Conexión a la base de datos
 $serverName = "localhost";
 $connectionOptions = array(
@@ -27,7 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fecha = $_GET['fecha'];
     $hora = $_POST['hora'];
     $descripcion = $_POST['descripcion'];
-    $id_usuario = 1; // Suponiendo que el ID de usuario está hardcodeado, puedes cambiar esto según sea necesario
     $id_tipo = $_POST['id_tipo'];
 
     // Verificar si el tipo de evento es "Otro"

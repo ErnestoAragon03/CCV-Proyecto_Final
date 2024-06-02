@@ -25,10 +25,16 @@ if ($stmt === false) {
     die("Error al ejecutar la consulta: " . print_r(sqlsrv_errors(), true));
 }
 
+
 // Verificar si se encontró un usuario con las credenciales proporcionadas
 if ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+    //Iniciar Sesión
+    session_start();
+    $id_sesion = $row['ID_Usuario'];
+    $_SESSION["id_usuario"] = $id_sesion;
     // Inicio de sesión exitoso
     echo "<script>alert('Inicio de sesión exitoso');</script>";
+    
     // Redirigir al usuario al calendario
     header("Location: calendario.php");
     exit();
