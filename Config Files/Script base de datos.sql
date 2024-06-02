@@ -43,7 +43,7 @@ CREATE TABLE Contacto(
 	FOREIGN KEY(ID_Evento) REFERENCES Evento(ID_Evento))
 
 
-	INSERT INTO Tipo_Evento (ID_Tipo, Nombre_Evento, Frecuencia, ID_Usuario) VALUES 
+INSERT INTO Tipo_Evento (ID_Tipo, Nombre_Evento, Frecuencia, ID_Usuario) VALUES 
 (1, 'Cumpleaños', 'A', 1),
 (2, 'Reunión', 'M', 1),
 (3, 'Fiesta', 'U', 1),
