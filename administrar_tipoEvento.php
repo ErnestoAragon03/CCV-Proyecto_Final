@@ -18,13 +18,13 @@ if ($notification): ?>
             <?php echo $notification; ?>
         </div>
         <script>
-            // Usar JavaScript para ocultar la notificación después de 5 segundos
+            // Usar JavaScript para ocultar la notificación después de 3 segundos
             setTimeout(function() {
                 var notification = document.getElementById('notification');
                 if (notification) {
                     notification.style.display = 'none';
                 }
-            }, 5000);
+            }, 3000);
         </script>
 <?php endif; ?>
 <?php
@@ -95,18 +95,23 @@ if ($notification): ?>
                 <input type="hidden" name="nombre_evento_actual" value="' . htmlspecialchars($row['Nombre_Evento']) . '">
                 <input type="submit" value="Modificar">
               </form>';
-        echo '<form action="eliminar_tipoEvento.php" method="POST" style="display:inline;">
+        echo '<form action="eliminar_tipoEvento.php" method="POST" style="display:inline;" onsubmit="return confirmarEliminacion();">
                 <input type="hidden" name="id_tipo" value="' . $row['ID_Tipo'] . '">
-                <input type="submit" value="Eliminar">
+                <input type="submit" class="btn btn-eliminar" value="Eliminar">
               </form>';
         echo '</div>';
     }
 
     echo '</div>';
-    echo '<br><form action="crear_tipoEvento.html" method="POST">
+    echo '<br><form action="crear_tipoEvento.php" method="POST">
             <input type="hidden" name="id_usuario" value="' . $id_usuario . '">
             <input type="submit" value="Crear Nuevo Evento">
           </form>';
+    echo '<script>
+          function confirmarEliminacion() {
+              return confirm("¿Está seguro de que desea eliminar este tipo de evento?");
+          }
+      </script>';
     echo '<footer>
             <form action="calendario.php">
                 <input type="submit" value="Regresar">
