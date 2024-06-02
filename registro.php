@@ -33,18 +33,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>Registrarse</h2>
-    <form action="registro.php" method="POST">
-        <label for="nombre">Nombre:</label><br>
-        <input type="text" id="nombre" name="nombre" required><br>
-        <label for="correo">Correo electrónico:</label><br>
-        <input type="email" id="correo" name="correo" required><br>
-        <label for="contrasena">Contraseña:</label><br>
-        <input type="password" id="contrasena" name="contrasena" required><br><br>
-        <button type="submit">Registrarse</button>
-    </form>
-    <p>¿Ya tienes una cuenta? <a href="index.php">Inicia sesión aquí</a>.</p>
+    <div class="wrapper">
+        <h2>Registrarse</h2>
+        <form action="registro.php" method="POST">
+            <div class="field">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div>
+            <div class="field">
+                <label for="correo">Correo electrónico:</label>
+                <input type="email" id="correo" name="correo" required>
+            </div>
+            <div class="field">
+                <label for="contrasena">Contraseña:</label>
+                <input type="password" id="contrasena" name="contrasena" required>
+            </div>
+            <button class="my-button" type="submit">Registrarse</button>
+        </form>
+        <p>¿Ya tienes una cuenta? <a href="index.php">Inicia sesión aquí</a>.</p>
+    </div>
 </body>
 </html>

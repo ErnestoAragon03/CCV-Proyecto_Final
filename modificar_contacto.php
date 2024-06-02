@@ -1,11 +1,4 @@
 <?php
-// Verificar si se recibió el ID del contacto por GET
-if (!isset($_GET['id'])) {
-    die("ID de contacto no especificado.");
-}
-
-$id_contacto = $_GET['id'];
-
 // Conexión a la base de datos
 $serverName = "localhost";
 $connectionOptions = array(
@@ -19,16 +12,14 @@ if (!$conn) {
     die("La conexión falló: " . print_r(sqlsrv_errors(), true));
 }
 
-// Obtener los datos del contacto
-$sql = "SELECT * FROM Contacto WHERE ID_Contacto = ?";
-$params = array($id_contacto);
-$stmt = sqlsrv_query($conn, $sql, $params);
+// Obtener el ID del contacto a modificar
+$id_contacto = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-if ($stmt === false) {
-    die("Error al ejecutar la consulta: " . print_r(sqlsrv_errors(), true));
-}
-
-$contacto = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+// Consultar la información del contacto
+$sql_contacto = "SELECT * FROM Contacto WHERE ID_Contacto = ?";
+$params_contacto = array($id_contacto);
+$stmt_contacto = sqlsrv_query($conn, $sql_contacto, $params_contacto);
+$contacto = sqlsrv_fetch_array($stmt_contacto, SQLSRV_FETCH_ASSOC);
 
 // Comprobar si el formulario ha sido enviado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -36,38 +27,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = $_POST['nombre'];
     $direccion = $_POST['direccion'];
     $telefono = $_POST['telefono'];
-    $correo = $_POST['correo'];
+    $correo = $_POST['email'];
     $fecha_cumple = $_POST['fecha_cumple'];
-
+    
+    // Verificar longitud del teléfono y rellenar con ceros si es necesario
+    if (strlen($telefono) > 8) {
+        die("El número de teléfono no puede tener más de 8 caracteres.");
+    }
+    $telefono = str_pad($telefono, 8, "0", STR_PAD_LEFT);
+    
     // Actualizar el contacto
-    $sql_update = "UPDATE Contacto SET Nombre = ?, Direccion = ?, Telefono = ?, Correo = ?, Fecha_cumple = ? WHERE ID_Contacto = ?";
-    $params_update = array($nombre, $direccion, $telefono, $correo, $fecha_cumple, $id_contacto);
-    $stmt_update = sqlsrv_query($conn, $sql_update, $params_update);
+    $sql = "UPDATE Contacto SET Nombre = ?, Direccion = ?, Telefono = ?, Correo = ?, Fecha_Na = ? WHERE ID_Contacto = ?";
+    $params = array($nombre, $direccion, $telefono, $correo, $fecha_cumple, $id_contacto);
+    $stmt = sqlsrv_query($conn, $sql, $params);
 
-    if ($stmt_update === false) {
+    if ($stmt === false) {
         die("Error al ejecutar la consulta: " . print_r(sqlsrv_errors(), true));
     } else {
-        // Actualizar el evento de cumpleaños asociado
-        $titulo = "Cumpleaños de $nombre";
-        $descripcion = "Cumpleaños de $nombre";
-        $id_evento = $contacto['ID_Evento'];
-
-        $sql_update_evento = "UPDATE Evento SET Titulo = ?, Fecha = ?, Descripcion = ? WHERE ID_Evento = ?";
-        $params_update_evento = array($titulo, $fecha_cumple, $descripcion, $id_evento);
-        $stmt_update_evento = sqlsrv_query($conn, $sql_update_evento, $params_update_evento);
-
-        if ($stmt_update_evento === false) {
-            die("Error al actualizar el evento de cumpleaños: " . print_r(sqlsrv_errors(), true));
-        } else {
-            echo "Contacto y evento de cumpleaños actualizados correctamente.";
-            header("Location: listar_contactos.php");
-            exit;
-        }
+        echo "Contacto actualizado correctamente.";
+        header("Location: listar_contactos.php");
+        exit;
     }
-
-    // Cerrar la conexión
-    sqlsrv_close($conn);
 }
+
+// Cerrar la conexión
+sqlsrv_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -76,24 +60,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modificar Contacto</title>
+    <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-    <h2>Modificar Contacto</h2>
-    <form action="modificar_contacto.php?id=<?php echo $id_contacto; ?>" method="POST">
-        <label for="nombre">Nombre:</label><br>
-        <input type="text" id="nombre" name="nombre" value="<?php echo $contacto['Nombre']; ?>" required><br>
-        <label for="apellido">Apellido:</label><br>
-        <input type="text" id="apellido" name="apellido" value="<?php echo $contacto['Apellido']; ?>" required><br>
-        <label for="direccion">Dirección:</label><br>
-        <input type="text" id="direccion" name="direccion" value="<?php echo $contacto['Direccion']; ?>" required><br>
-        <label for="telefono">Teléfono:</label><br>
-        <input type="text" id="telefono" name="telefono" value="<?php echo $contacto['Telefono']; ?>" required><br>
-        <label for="correo">Correo:</label><br>
-        <input type="email" id="correo" name="correo" value="<?php echo $contacto['Correo']; ?>" required><br>
-        <label for="fecha_cumple">Fecha de cumpleaños:</label><br>
-        <input type="date" id="fecha_cumple" name="fecha_cumple" value="<?php echo $contacto['Fecha_Cumple']; ?>" required><br><br>
-        <button type="submit">Modificar Contacto</button>
-    </form>
-    <p><a href="listar_contactos.php">Volver a la lista de contactos</a></p>
+    <div class="wrapper">
+        <h2>Modificar Contacto</h2>
+        <form action="modificar_contacto.php?id=<?php echo $id_contacto; ?>" method="POST">
+            <div class="field">
+                <label for="nombre">Nombre Completo:</label>
+                <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($contacto['Nombre']); ?>" required>
+            </div>
+            <div class="field">
+                <label for="direccion">Dirección:</label>
+                <input type="text" id="direccion" name="direccion" value="<?php echo htmlspecialchars($contacto['Direccion']); ?>" required>
+            </div>
+            <div class="field">
+                <label for="telefono">Teléfono:</label>
+                <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($contacto['Telefono']); ?>" required>
+            </div>
+            <div class="field">
+                <label for="email">Correo Electrónico:</label>
+                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($contacto['Correo']); ?>" required>
+            </div>
+            <div class="field">
+                <label for="fecha_cumple">Fecha de Cumpleaños:</label>
+                <input type="date" id="fecha_cumple" name="fecha_cumple" value="<?php echo htmlspecialchars($contacto['Fecha_Na']); ?>" required>
+            </div>
+            <button type="submit">Guardar Cambios</button>
+           
+        </form>
+        <p><a href="listar_contactos.php">Volver a la lista de contactos</a></p>
+    </div>
 </body>
 </html>

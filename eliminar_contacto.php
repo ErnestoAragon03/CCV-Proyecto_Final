@@ -1,6 +1,6 @@
 <?php
-// Verificar si se recibió el ID del contacto por GET
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Verificar si se ha enviado el formulario de eliminar
+if(isset($_POST['eliminar_contacto'])) {
     // Conexión a la base de datos
     $serverName = "localhost";
     $connectionOptions = array(
@@ -8,32 +8,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         "ReturnDatesAsStrings" => true
     );
     $conn = sqlsrv_connect($serverName, $connectionOptions);
-     // Verificar la conexión
-     if (!$conn) {
+
+    // Verificar la conexión
+    if (!$conn) {
         die("La conexión falló: " . print_r(sqlsrv_errors(), true));
     }
 
-$id_contacto = $_POST['id_contacto'];
-$id_evento = $_POST['id_evento'];
+    // Obtener el ID del contacto a eliminar
+    $id_contacto = $_POST['id_contacto'];
 
-// Eliminar el evento asociado
-$sql = "DELETE FROM Evento WHERE ID_Evento = ?
-        DELETE FROM Contacto WHERE ID_Contacto =?";
-$params = array($id_evento, $id_contacto);
-$stmt = sqlsrv_query($conn, $sql, $params);
+    // Consulta SQL para eliminar el contacto
+    $sql = "DELETE FROM Contacto WHERE ID_Contacto = ?";
+    $params = array($id_contacto);
+    $stmt = sqlsrv_query($conn, $sql, $params);
 
-if ($stmt === false) {
-    die("Error al eliminar el contacto: " . print_r(sqlsrv_errors(), true));
-} else {
-    echo "Contacto y evento de cumpleaños eliminados correctamente.";
-    header("Location: listar_contactos.php");
-    exit;
-}
+    if ($stmt === false) {
+        die("Error al ejecutar la consulta: " . print_r(sqlsrv_errors(), true));
+    } else {
+        // Cerrar la conexión
+        sqlsrv_close($conn);
 
-// Cerrar la conexión
-sqlsrv_close($conn);
-} else {
-    echo "Método de solicitud no válido.";
+        // Redirigir de vuelta a listar_contactos.php
+        header("Location: listar_contactos.php");
+        exit();
+    }
 }
 ?>
-

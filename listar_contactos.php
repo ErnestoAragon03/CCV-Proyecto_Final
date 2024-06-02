@@ -32,8 +32,7 @@ if ($stmt === false) {
     <h2>Lista de Contactos</h2>
     <table border="1">
         <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
+            <th>Nombre Completo</th>
             <th>Dirección</th>
             <th>Teléfono</th>
             <th>Correo</th>
@@ -43,17 +42,15 @@ if ($stmt === false) {
         <?php while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)): ?>
         <tr>
             <td><?php echo $row['Nombre']; ?></td>
-            <td><?php echo $row['Apellido']; ?></td>
             <td><?php echo $row['Direccion']; ?></td>
             <td><?php echo $row['Telefono']; ?></td>
             <td><?php echo $row['Correo']; ?></td>
-            <td><?php echo $row['Fecha_Cumple']; ?></td>
+            <td><?php echo $row['Fecha_Na']; ?></td>
             <td>
                 <a href="modificar_contacto.php?id=<?php echo $row['ID_Contacto']; ?>">Modificar</a>
                 <form action="eliminar_contacto.php" method="POST" style="display:inline;">
-                    <input type="hidden" name="id_contacto" value=<?php echo $row['ID_Contacto']; ?>>
-                    <input type="hidden" name="id_evento" value=<?php echo $row['ID_Evento']; ?>>
-                    <input type="submit" value="Eliminar">
+                    <input type="hidden" name="id_contacto" value="<?php echo $row['ID_Contacto']; ?>">
+                    <input type="submit" name="eliminar_contacto" value="Eliminar">
                 </form>
             </td>
         </tr>

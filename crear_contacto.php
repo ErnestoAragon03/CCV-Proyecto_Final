@@ -24,12 +24,17 @@ while ($row = sqlsrv_fetch_array($stmt_tipos, SQLSRV_FETCH_ASSOC)) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Obtener datos del formulario
     $nombre = $_POST['nombre'];
-    $apellido = $_POST['apellido'];
     $direccion = $_POST['direccion'];
     $telefono = $_POST['telefono'];
-    $correo = $_POST['correo'];
+    $correo = $_POST['email'];
     $fecha_cumple = $_POST['fecha_cumple'];
     $id_usuario = 1; // Suponiendo que el ID de usuario está hardcodeado, puedes cambiar esto según sea necesario
+
+    // Verificar longitud del teléfono y rellenar con ceros si es necesario
+    if (strlen($telefono) > 8) {
+        die("El número de teléfono no puede tener más de 8 caracteres.");
+    }
+    $telefono = str_pad($telefono, 8, "0", STR_PAD_LEFT);
 
     // Obtener el último ID_Contacto y generar uno nuevo
     $sql_last_id_contacto = "SELECT MAX(ID_Contacto) AS MaxID FROM Contacto";
@@ -38,18 +43,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $next_id_contacto = $row_last_id_contacto['MaxID'] + 1;
 
     // Insertar el nuevo contacto
-    $sql = "INSERT INTO Contacto (ID_Contacto, Nombre, Apellido, Direccion, Telefono, Correo, Fecha_Cumple, ID_Usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    $params = array($next_id_contacto, $nombre, $apellido, $direccion, $telefono, $correo, $fecha_cumple, $id_usuario);
+    $sql = "INSERT INTO Contacto (ID_Contacto, Nombre, Direccion, Telefono, Correo, Fecha_Na, ID_Usuario) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $params = array($next_id_contacto, $nombre, $direccion, $telefono, $correo, $fecha_cumple, $id_usuario);
     $stmt = sqlsrv_query($conn, $sql, $params);
 
     if ($stmt === false) {
         die("Error al ejecutar la consulta: " . print_r(sqlsrv_errors(), true));
     } else {
         // Crear el evento de cumpleaños
-        $titulo = "Cumpleaños de $nombre $apellido";
+        $titulo = "Cumpleaños de $nombre";
+        $titulo = substr($titulo, 0, 20); // Truncar el título a 20 caracteres
         $hora = "00:00:00";
-        $descripcion = "Cumpleaños de $nombre $apellido";
-        $id_tipo = 2; // Suponiendo que ID_Tipo 1 es para cumpleaños
+        $descripcion = "Cumpleaños de $nombre";
+        $id_tipo = 1; // Suponiendo que ID_Tipo 1 es para cumpleaños
 
         $sql_last_id_evento = "SELECT MAX(ID_Evento) AS MaxID FROM Evento";
         $stmt_last_id_evento = sqlsrv_query($conn, $sql_last_id_evento);
@@ -89,24 +95,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Contacto</title>
+    <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-    <h2>Crear Contacto</h2>
-    <form action="crear_contacto.php" method="POST">
-        <label for="nombre">Nombres:</label><br>
-        <input type="text" id="nombre" name="nombre" required><br>
-        <label for="apellido">Apellidos:</label><br>
-        <input type="text" id="apellido" name="apellido" required><br>
-        <label for ="direccion">Direccion:</label><br>
-        <input type="text" id="direccion" name="direccion" required><br>
-        <label for="telefono">Teléfono:</label><br>
-        <input type="text" id="telefono" name="telefono" required><br>
-        <label for="email">Correo Electrónico:</label><br>
-        <input type="email" id="email" name="email" requiered><br>
-        <label for="fecha_cumple">Fecha de Cumpleaños:</label><br>
-        <input type="date" id="fecha_cumple" name="fecha_cumple" required><br><br>
-        <button type="submit">Crear Contacto</button>
-    </form>
-    <p><a href="listar_contactos.php">Volver a la lista de contactos</a></p>
+    <div class="wrapper">
+        <h2>Crear Contacto</h2>
+        <form action="crear_contacto.php" method="POST">
+            <div class="field">
+                <label for="nombre">Nombre Completo:</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div>
+            <div class="field">
+                <label for="direccion">Dirección:</label>
+                <input type="text" id="direccion" name="direccion" required>
+            </div>
+            <div class="field">
+                <label for="telefono">Teléfono:</label>
+                <input type="text" id="telefono" name="telefono" required>
+            </div>
+            <div class="field">
+                <label for="email">Correo Electrónico:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="field">
+                <label for="fecha_cumple">Fecha de Cumpleaños:</label>
+                <input type="date" id="fecha_cumple" name="fecha_cumple" required>
+            </div>
+            <button type="submit">Crear Contacto</button>
+            
+        </form>
+        <p><a href="listar_contactos.php">Volver a la lista de contactos</a></p>
+        <p><a href="calendario.php">Calendario</a></p>
+    </div>
 </body>
 </html>

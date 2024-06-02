@@ -24,11 +24,11 @@ while ($row = sqlsrv_fetch_array($stmt_tipos, SQLSRV_FETCH_ASSOC)) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Obtener datos del formulario
     $titulo = $_POST['titulo'];
+    $fecha = $_GET['fecha'];
     $hora = $_POST['hora'];
     $descripcion = $_POST['descripcion'];
     $id_usuario = 1; // Suponiendo que el ID de usuario está hardcodeado, puedes cambiar esto según sea necesario
     $id_tipo = $_POST['id_tipo'];
-    $fecha = $_GET['fecha'];
 
     // Verificar si el tipo de evento es "Otro"
     if ($id_tipo == "otro") {
@@ -74,7 +74,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 sqlsrv_close($conn);
 ?>
 
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -94,8 +93,8 @@ sqlsrv_close($conn);
     </script>
 </head>
 <body>
-    <h2>Crear Evento para el <?php echo $fecha; ?></h2>
-    <form action="crear_evento.php?fecha=<?php echo $fecha; ?>" method="POST">
+    <h2>Crear Evento</h2>
+    <form action="crear_evento.php?fecha=<?php echo $_GET['fecha']; ?>" method="POST">
         <label for="titulo">Título:</label><br>
         <input type="text" id="titulo" name="titulo" required><br>
         <label for="hora">Hora:</label><br>
