@@ -77,6 +77,7 @@ if (isset($_SESSION['notification'])) {
         echo '<form action="modificar_tipoEvento.php" method="POST" style="display:inline;">
                 <input type="hidden" name="id_tipo" value="' . $row['ID_Tipo'] . '">
                 <input type="hidden" name="nombre_evento_actual" value="' . htmlspecialchars($row['Nombre_Evento']) . '">
+                <input type="hidden" name="nombre_evento_actual" value="' . htmlspecialchars($row['Nombre_Evento']) . '">
                 <input type="submit" value="Modificar">
               </form>';
         echo '<form action="eliminar_tipoEvento.php" method="POST" style="display:inline;">
