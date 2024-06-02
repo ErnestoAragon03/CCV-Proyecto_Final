@@ -6,13 +6,28 @@ if (!isset($_SESSION['id_usuario'])) {
     exit();
 }
 $id_usuario = $_SESSION['id_usuario'];
-
+//Verificar si hay notificaciones en la sesión por mostrar 
 $notification = "";
 if (isset($_SESSION['notification'])) {
     $notification = $_SESSION['notification'];
     unset($_SESSION['notification']); // Elimina la notificación de la sesión
 }
 
+if ($notification): ?>
+    <div class="notification" id="notification">
+            <?php echo $notification; ?>
+        </div>
+        <script>
+            // Usar JavaScript para ocultar la notificación después de 5 segundos
+            setTimeout(function() {
+                var notification = document.getElementById('notification');
+                if (notification) {
+                    notification.style.display = 'none';
+                }
+            }, 5000);
+        </script>
+<?php endif; ?>
+<?php
     // Conexión a la base de datos
     $serverName = "localhost";
     $connectionOptions = array(
@@ -93,7 +108,7 @@ if (isset($_SESSION['notification'])) {
             <input type="submit" value="Crear Nuevo Evento">
           </form>';
     echo '<footer>
-            <form action="ID_Usuario.html">
+            <form action="calendario.php">
                 <input type="submit" value="Regresar">
             </form>
         </footer></body></html>';

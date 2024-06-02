@@ -37,7 +37,7 @@ $stmt = sqlsrv_query($conn, $sql, $params);
 if ($stmt === false) {
     die("Error al ejecutar la consulta: " . print_r(sqlsrv_errors(), true));
 } else {
-    echo "Evento creado correctamente.";
+    header('Location: administrar_tipoEvento.php');
 }
 
 // Cerrar la conexión

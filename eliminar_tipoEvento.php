@@ -31,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Error al ejecutar la consulta: " . print_r(sqlsrv_errors(), true));
     } else {
         echo "Evento eliminado correctamente.";
+        header('Location: administrar_tipoEvento.php');
     }
 
     // Cerrar la conexión
