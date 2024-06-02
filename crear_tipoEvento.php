@@ -1,4 +1,11 @@
 <?php
+session_start();
+if (!isset($_SESSION['id_usuario'])) {
+    // Si no está presente, redirige al usuario al login o maneja el error
+    header('Location: login.php');
+    exit();
+}
+$id_usuario = $_SESSION['id_usuario'];
 // Conexión a la base de datos
 $serverName = "localhost";
 $connectionOptions = array(
@@ -13,7 +20,6 @@ if (!$conn) {
 }
 
 // Obtener datos del formulario
-$id_usuario = $_POST['id_usuario'];
 $nombre_evento = $_POST['nombre_evento'];
 $frecuencia = $_POST['frecuencia'];
 

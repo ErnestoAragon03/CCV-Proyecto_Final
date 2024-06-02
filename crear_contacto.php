@@ -1,4 +1,11 @@
 <?php
+session_start();
+if (!isset($_SESSION['id_usuario'])) {
+    // Si no está presente, redirige al usuario al login o maneja el error
+    header('Location: login.php');
+    exit();
+}
+$id_usuario = $_SESSION['id_usuario'];
 // Conexión a la base de datos
 $serverName = "localhost";
 $connectionOptions = array(
@@ -28,7 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $telefono = $_POST['telefono'];
     $correo = $_POST['email'];
     $fecha_cumple = $_POST['fecha_cumple'];
-    $id_usuario = 1; // Suponiendo que el ID de usuario está hardcodeado, puedes cambiar esto según sea necesario
 
     // Verificar longitud del teléfono y rellenar con ceros si es necesario
     if (strlen($telefono) > 8) {

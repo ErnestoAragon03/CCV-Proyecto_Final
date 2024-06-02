@@ -1,4 +1,11 @@
 <?php
+session_start();
+if (!isset($_SESSION['id_usuario'])) {
+    // Si no está presente, redirige al usuario al login o maneja el error
+    header('Location: login.php');
+    exit();
+}
+$id_usuario = $_SESSION['id_usuario'];
 // Conexión a la base de datos
 $serverName = "localhost";
 $connectionOptions = array(
@@ -13,8 +20,9 @@ if (!$conn) {
 }
 
 // Obtener la lista de contactos
-$sql = "SELECT * FROM Contacto";
-$stmt = sqlsrv_query($conn, $sql);
+$sql = "SELECT * FROM Contacto WHERE ID_Usuario = ?";
+$params = array($id_usuario);
+$stmt = sqlsrv_query($conn, $sql, $params);
 
 if ($stmt === false) {
     die("Error al ejecutar la consulta: " . print_r(sqlsrv_errors(), true));

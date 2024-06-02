@@ -61,6 +61,13 @@
     var currentDate = moment().format('YYYY-MM-DD');
 
     <?php
+    session_start();
+    if (!isset($_SESSION['id_usuario'])) {
+        // Si no está presente, redirige al usuario al login o maneja el error
+        header('Location: login.php');
+        exit();
+    }
+    $id_usuario = $_SESSION['id_usuario'];
     // Database connection
     $serverName = "localhost";
     $connectionOptions = array(
@@ -74,8 +81,9 @@
     }
 
     // Fetch event dates with event type
-    $sqlEvent = "SELECT E.Fecha, T.Nombre_Evento, E.Titulo FROM Evento E JOIN Tipo_Evento T ON E.ID_Tipo = T.ID_Tipo";
-    $stmtEvent = sqlsrv_query($conn, $sqlEvent);
+    $sqlEvent = "SELECT E.Fecha, T.Nombre_Evento, E.Titulo FROM Evento E JOIN Tipo_Evento T ON E.ID_Tipo = T.ID_Tipo WHERE E.ID_Usuario = ?";
+    $params = array($id_usuario);
+    $stmtEvent = sqlsrv_query($conn, $sqlEvent, $params);
     if ($stmtEvent === false) {
         die("Error al ejecutar la consulta de eventos: " . print_r(sqlsrv_errors(), true));
     }
@@ -179,5 +187,8 @@
 <body>
     <select id="yearSelector"></select>
     <div style="max-width: 1000px; margin: auto" id='calendar'></div>
+    <form action="administrar_tipoEvento.php">
+    <input type="submit" href="administrar_tipoEvento.php" value="Tipos de Evento"/>
+    </form>
 </body>
 </html>

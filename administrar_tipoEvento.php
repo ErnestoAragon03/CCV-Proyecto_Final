@@ -1,14 +1,17 @@
 <?php
 session_start();
+if (!isset($_SESSION['id_usuario'])) {
+    // Si no está presente, redirige al usuario al login o maneja el error
+    header('Location: login.php');
+    exit();
+}
+$id_usuario = $_SESSION['id_usuario'];
 
 $notification = "";
 if (isset($_SESSION['notification'])) {
     $notification = $_SESSION['notification'];
     unset($_SESSION['notification']); // Elimina la notificación de la sesión
 }
-// Verifica que se haya enviado el ID de Usuario como parámetro POST
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_usuario'])) {
-    $id_usuario = $_POST['id_usuario'];
 
     // Conexión a la base de datos
     $serverName = "localhost";
@@ -33,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_usuario'])) {
         );
         return isset($map[$frecuencia]) ? $map[$frecuencia] : 'Desconocido';
     }
-    // Obtener eventos del usuario
+    // Obtener tipos de eventos del usuario
     $sql = "SELECT ID_Tipo, Nombre_Evento, Frecuencia FROM Tipo_Evento WHERE ID_Usuario = ?";
     $params = array($id_usuario);
     $stmt = sqlsrv_query($conn, $sql, $params);
@@ -96,7 +99,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_usuario'])) {
 
     // Cerrar la conexión
     sqlsrv_close($conn);
-} else {
-    echo "ID de Usuario no proporcionado.";
-}
 ?>
