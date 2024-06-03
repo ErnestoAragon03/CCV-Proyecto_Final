@@ -19,8 +19,8 @@ if (!$conn) {
     die("La conexión falló: " . print_r(sqlsrv_errors(), true));
 }
 
-// Obtener la lista de contactos
-$sql = "SELECT * FROM Contacto WHERE ID_Usuario = ?";
+// Obtener la lista de eventos del usuario
+$sql = "SELECT * FROM Evento WHERE ID_Usuario = ?";
 $params = array($id_usuario);
 $stmt = sqlsrv_query($conn, $sql, $params);
 
@@ -34,7 +34,7 @@ if ($stmt === false) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Contactos</title>
+    <title>Lista de Eventos</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -116,43 +116,54 @@ if ($stmt === false) {
 
 <body>
     <div class="wrapper">
-        <h2>Lista de Contactos</h2>
+        <h2>Lista de Eventos</h2>
         <table class="contacts-table">
             <thead>
                 <tr>
-                    <th>Nombre Completo</th>
-                    <th>Dirección</th>
-                    <th>Teléfono</th>
-                    <th>Correo</th>
-                    <th>Fecha de Nacimiento</th>
-                    <th>Acciones</th>
+                    <th>Título</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Descripción</th>
+                    <th>Tipo de Evento</th>
                 </tr>
             </thead>
             <tbody>
                 <?php while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)): ?>
                 <tr>
-                    <td><?php echo $row['Nombre']; ?></td>
-                    <td><?php echo $row['Direccion']; ?></td>
-                    <td><?php echo $row['Telefono']; ?></td>
-                    <td><?php echo $row['Correo']; ?></td>
-                    <td><?php echo $row['Fecha_Na']; ?></td>
-                    <td>
-                        <a href="modificar_contacto.php?id=<?php echo $row['ID_Contacto']; ?>">Modificar</a>
-                        <form action="eliminar_contacto.php" method="POST" style="display:inline;">
-                            <input type="hidden" name="id_contacto" value="<?php echo $row['ID_Contacto']; ?>">
-                            <input type="submit" name="eliminar_contacto" value="Eliminar">
-                        </form>
-                    </td>
+                    <td><?php echo $row['Titulo']; ?></td>
+                    <td><?php echo date('Y-m-d', strtotime($row['Fecha'])); ?></td>
+                    <td><?php echo date('H:i', strtotime($row['Hora'])); ?></td>
+                    <td><?php echo $row['Descripcion']; ?></td>
+                    <td><?php echo obtenerNombreTipoEvento($row['ID_Tipo'], $conn); ?></td>
                 </tr>
                 <?php endwhile; ?>
             </tbody>
         </table>
-        <p><a href="crear_contacto.php?fecha=<?php echo date('Y-m-d'); ?>">Crear Contacto</a></p>
+        <p><a href="crear_evento.php">Crear Evento</a></p>
+        <form action="calendario.php">
+                <input type="submit" class="btn" value="Regresar">
+        </form>
     </div>
 </body>
 </html>
 
+
 <?php
+// Función para obtener el nombre del tipo de evento
+function obtenerNombreTipoEvento($id_tipo, $conn) {
+    $sql = "SELECT Nombre_Evento FROM Tipo_Evento WHERE ID_Tipo = ?";
+    $params = array($id_tipo);
+    $stmt = sqlsrv_query($conn, $sql, $params);
+    if ($stmt === false) {
+        return "Tipo no encontrado";
+    }
+    $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    if ($row === false) {
+        return "Tipo no encontrado";
+    }
+    return $row['Nombre_Evento'];
+}
+
 // Cerrar la conexión
 sqlsrv_close($conn);
 ?>

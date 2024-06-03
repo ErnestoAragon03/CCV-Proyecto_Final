@@ -89,6 +89,7 @@ sqlsrv_close($conn);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Evento</title>
+    <link href="style.css" rel="stylesheet">
     <script>
         function toggleNuevoTipo() {
             var selectTipo = document.getElementById('id_tipo');
@@ -102,27 +103,37 @@ sqlsrv_close($conn);
     </script>
 </head>
 <body>
-    <h2>Crear Evento</h2>
-    <form action="crear_evento.php?fecha=<?php echo $_GET['fecha']; ?>" method="POST">
-        <label for="titulo">Título:</label><br>
-        <input type="text" id="titulo" name="titulo" required><br>
-        <label for="hora">Hora:</label><br>
-        <input type="time" id="hora" name="hora" required><br>
-        <label for="descripcion">Descripción:</label><br>
-        <textarea id="descripcion" name="descripcion" required></textarea><br>
-        <label for="id_tipo">Tipo de Evento:</label><br>
-        <select id="id_tipo" name="id_tipo" onchange="toggleNuevoTipo()" required>
-            <?php foreach ($tipos_eventos as $tipo) : ?>
-                <option value="<?php echo $tipo['ID_Tipo']; ?>"><?php echo $tipo['Nombre_Evento']; ?></option>
-            <?php endforeach; ?>
-            <option value="otro">Otro</option>
-        </select><br><br>
-        <div id="nuevo_tipo_div" style="display: none;">
-            <label for="nuevo_tipo">Nuevo Tipo de Evento:</label><br>
-            <input type="text" id="nuevo_tipo" name="nuevo_tipo"><br><br>
-        </div>
-        <button type="submit">Crear Evento</button>
-    </form>
-    <p><a href="calendario.php">Volver al calendario</a></p>
+    <div class="wrapper">
+        <h2>Crear Evento</h2>
+        <form action="crear_evento.php?fecha=<?php echo $_GET['fecha']; ?>" method="POST">
+            <div class="field">
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" name="titulo" required>
+            </div>
+            <div class="field">
+                <label for="hora">Hora:</label>
+                <input type="time" id="hora" name="hora" required>
+            </div>
+            <div class="field">
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" name="descripcion" required></textarea>
+            </div>
+            <div class="field">
+                <label for="id_tipo">Tipo de Evento:</label>
+                <select id="id_tipo" name="id_tipo" onchange="toggleNuevoTipo()" required>
+                    <?php foreach ($tipos_eventos as $tipo) : ?>
+                        <option value="<?php echo $tipo['ID_Tipo']; ?>"><?php echo $tipo['Nombre_Evento']; ?></option>
+                    <?php endforeach; ?>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+            <div id="nuevo_tipo_div" class="field" style="display: none;">
+                <label for="nuevo_tipo">Nuevo Tipo de Evento:</label>
+                <input type="text" id="nuevo_tipo" name="nuevo_tipo">
+            </div>
+            <button type="submit">Crear Evento</button>
+        </form>
+        <p><a href="calendario.php">Volver al calendario</a></p>
+    </div>
 </body>
 </html>

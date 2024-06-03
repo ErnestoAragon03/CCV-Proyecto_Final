@@ -1,12 +1,12 @@
 <?php
 session_start();
 if (!isset($_SESSION['id_usuario'])) {
-    // Si no está presente, redirige al usuario al login o maneja el error
+ 
     header('Location: login.php');
     exit();
 }
 $id_usuario = $_SESSION['id_usuario'];
-// Conexión a la base de datos
+
 $serverName = "localhost";
 $connectionOptions = array(
     "Database" => "CCVDB",
@@ -95,13 +95,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Contacto</title>
-    <link href="styles.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
 </head>
 <body>
     <div class="wrapper">
