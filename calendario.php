@@ -15,32 +15,10 @@
             margin: 0 auto;
             text-align: center;
         }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }   
-        button[type="submit"],
-        input[type="submit"] {
-            padding: 5px 10px;
-            background: #007bff;
-            border: none;
-            color: white;
-            font-size: 14px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button[type="submit"]:hover,
-        input[type="submit"]:hover {
-            background: #0056b3;
-        }
     </style>
 
     <script>
         $(document).ready(function() {
-        
             $('#calendar').fullCalendar({
                 header: {
                     left: 'prevYear,prev,next,nextYear today',
@@ -58,8 +36,16 @@
                             end: end.format()
                         },
                         success: function(data) {
-                  
                             data.forEach(function(event) {
+                                // Format date and time
+                                var fechaHoraInicio = moment(event.start).format('YYYY-MM-DDTHH:mm:ss');
+                                var fechaHoraFin = event.end ? moment(event.end).format('YYYY-MM-DDTHH:mm:ss') : null;
+
+                                // Assign formatted dates and times
+                                event.start = fechaHoraInicio;
+                                event.end = fechaHoraFin;
+
+                                // Other event adjustments if necessary
                                 if (event.frecuencia === 'diario') {
                                     event.className = 'event-diario';
                                 } else if (event.frecuencia === 'semanal') {
@@ -70,7 +56,6 @@
                                     event.className = 'event-anual';
                                 }
 
-                       
                                 if (event.tipo === 'contacto') {
                                     event.allDay = true;
                                 } else {
@@ -95,12 +80,12 @@
                     <?php
                     session_start();
                     if (!isset($_SESSION['id_usuario'])) {
-                     
                         header('Location: login.php');
                         exit();
                     }
                     $id_usuario = $_SESSION['id_usuario'];
-                    // Database connection
+
+                    // Conexión a la base de datos
                     $serverName = "localhost";
                     $connectionOptions = array(
                         "Database" => "CCVDB",
@@ -112,80 +97,72 @@
                         die("La conexión falló: " . print_r(sqlsrv_errors(), true));
                     }
 
-              
-                    $sqlEvent = "SELECT E.Fecha, T.Nombre_Evento, E.Titulo FROM Evento E JOIN Tipo_Evento T ON E.ID_Tipo = T.ID_Tipo WHERE E.ID_Usuario = ?";
+                    // Consulta de eventos
+                    $sqlEvent = "SELECT E.Fecha, E.Hora, T.Nombre_Evento, E.Titulo FROM Evento E JOIN Tipo_Evento T ON E.ID_Tipo = T.ID_Tipo WHERE E.ID_Usuario = ?";
                     $params = array($id_usuario);
                     $stmtEvent = sqlsrv_query($conn, $sqlEvent, $params);
                     if ($stmtEvent === false) {
                         die("Error al ejecutar la consulta de eventos: " . print_r(sqlsrv_errors(), true));
                     }
-                    while ($rowEvent = sqlsrv_fetch_array($stmtEvent, SQLSRV_FETCH_ASSOC)) {
-                  
-                        $eventDate = date('Y-m-d', strtotime($rowEvent['Fecha']));
-                        $titulo = $rowEvent['Titulo'];
 
-                       
-                        switch ($rowEvent['Nombre_Evento']) {
+                    // Generar script JS para cada evento
+                    while ($rowEvent = sqlsrv_fetch_array($stmtEvent, SQLSRV_FETCH_ASSOC)) {
+                        $eventDate = date('Y-m-d', strtotime($rowEvent['Fecha']));
+                        $horaEvento = date('H:i:s', strtotime($rowEvent['Hora']));
+                        $titulo = $rowEvent['Titulo'];
+                        $nombreEvento = $rowEvent['Nombre_Evento'];
+                        $backgroundColor = '';
+                        $icon = '';
+
+                        switch ($nombreEvento) {
                             case 'Cumpleaños':
-                                echo "if (date.format('YYYY-MM-DD') === '$eventDate') {";
-                                echo "cell.css('background-color', 'red');";
-                                echo "cell.append('<div class=\"event-container\"><img src=\"icons/birthday_icon.png\" class=\"event-image\" style=\"width: 10px; height: auto;\"><span class=\"event-label\">$titulo</span></div>');";
-                                echo "}";
+                                $backgroundColor = 'red';
+                                $icon = 'birthday_icon.png';
                                 break;
                             case 'Reunión':
-                                echo "if (date.format('YYYY-MM-DD') === '$eventDate') {";
-                                echo "cell.css('background-color', 'blue');";
-                                echo "cell.append('<div class=\"event-container\"><img src=\"icons/meeting_icon.png\" class=\"event-image\" style=\"width: 30px; height: auto;\"><span class=\"event-label\">$titulo</span></div>');";
-                                echo "}";
+                                $backgroundColor = 'blue';
+                                $icon = 'meeting_icon.png';
                                 break;
                             case 'Fiesta':
-                                echo "if (date.format('YYYY-MM-DD') === '$eventDate') {";
-                                    echo "cell.css('background-color', 'orange');";
-                                    echo "cell.append('<div class=\"event-container\"><img src=\"icons/party_icon.png\" class=\"event-image\" style=\"width: 30px; height: auto;\"><span class=\"event-label\">$titulo</span></div>');";
-                                    echo "}";
+                                $backgroundColor = 'orange';
+                                $icon = 'party_icon.png';
                                 break;
                             case 'Navidad':
-                                echo "if (date.format('YYYY-MM-DD') === '$eventDate') {";
-                                echo "cell.css('background-color', 'green');";
-                                echo "cell.append('<div class=\"event-container\"><img src=\"icons/christmas_icon.png\" class=\"event-image\" style=\"width: 30px; height: auto;\"><span class=\"event-label\">$titulo</span></div>');";
-                                echo "}";
+                                $backgroundColor = 'green';
+                                $icon = 'christmas_icon.png';
                                 break;
                             case 'Año Nuevo':
-                                echo "if (date.format('YYYY-MM-DD') === '$eventDate') {";
-                                echo "cell.css('background-color', 'grey');";
-                                echo "cell.append('<div class=\"event-container\"><img src=\"icons/newyear_icon.png\" class=\"event-image\" style=\"width: 30px; height: auto;\"><span class=\"event-label\">$titulo</span></div>');";
-                                echo "}";
+                                $backgroundColor = 'grey';
+                                $icon = 'newyear_icon.png';
                                 break;
                             case 'Día del Cariño':
-                                echo "if (date.format('YYYY-MM-DD') === '$eventDate') {";
-                                echo "cell.css('background-color', 'pink');";
-                                echo "cell.append('<div class=\"event-container\"><img src=\"icons/valentine_icon.png\" class=\"event-image\" style=\"width: 30px; height: auto;\"><span class=\"event-label\">$titulo</span></div><br>');";
-                                echo "}";
+                                $backgroundColor = 'pink';
+                                $icon = 'valentine_icon.png';
                                 break;
                             case 'Aniversario':
-                                echo "if (date.format('YYYY-MM-DD') === '$eventDate') {";
-                                echo "cell.css('background-color', 'purple');";
-                                echo "cell.append('<div class=\"event-container\"><img src=\"icons/anniversary_icon.png\" class=\"event-image\" style=\"width: 30px; height: auto;\"><span class=\"event-label\">$titulo</span></div><br>');";
-                                echo "}";
+                                $backgroundColor = 'purple';
+                                $icon = 'anniversary_icon.png';
                                 break;
                             default:
-                                echo "if (date.format('YYYY-MM-DD') === '$eventDate') {";
-                                echo "cell.css('background-color', 'yellow');";
-                                echo "cell.append('<div class=\"event-container\"><img src=\"icons/default_icon.png\" class=\"event-image\" style=\"width: 30px; height: auto;\"><span class=\"event-label\">$titulo</span></div>');";
-                                echo "}";
+                                $backgroundColor = 'yellow';
+                                $icon = 'default_icon.png';
                                 break;
                         }
+
+                        echo "if (date.format('YYYY-MM-DD') === '$eventDate') {";
+                        echo "cell.css('background-color', '$backgroundColor');";
+                        // Agregamos la hora al título del evento
+                        echo "cell.append('<div class=\"event-container\"><img src=\"icons/$icon\" class=\"event-image\" style=\"width: 30px; height: auto;\"><span class=\"event-label\">$titulo - $horaEvento</span></div>');";
+                        echo "}";
                     }
 
-                  
                     sqlsrv_close($conn);
                     ?>
                 },
 
                 eventRender: function(event, element) {
-                   
                     element.qtip({
-                        content: event.title + '<br>' + event.start.format('YYYY-MM-DD HH:mm') + (event.end ? ' - ' + event.end.format('YYYY-MM-DD HH:mm') : ''),
+                        content: event.title + '<br>' + event.start.format('YYYY-MM-DD HH:mm:ss') + (event.end ? ' - ' + event.end.format('YYYY-MM-DD HH:mm:ss') : ''),
                         style: {
                             classes: 'qtip-dark'
                         },
@@ -194,10 +171,15 @@
                             at: 'bottom right'
                         }
                     });
+                },
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
                 }
             });
 
-       
             var currentYear = new Date().getFullYear();
             var yearSelector = $('#yearSelector');
 
@@ -218,16 +200,10 @@
     </script>
 </head>
 <body>
-<select id="yearSelector" class="centered"></select>
-<div style="max-width: 1000px; margin: auto" id='calendar'></div>
-<div class="centered">
-<form action="administrar_tipoEvento.php" method="POST" style="display:inline;">
-                <input type="submit" class="btn" value="Tipos de Evento">
-</form>
-<form action="listar_contactos.php" method="get" style="display:inline;">
-        <input type="hidden" name="fecha" value="<?php echo htmlspecialchars($fecha); ?>">
-        <button type="submit">Contactos</button>
-</form>
-    </div>
+    <select id="yearSelector" class="centered"></select>
+    <div style="max-width: 1000px; margin: auto" id='calendar'></div>
+    <form action="administrar_tipoEvento.php">
+        <input type="submit" value="Tipos de Evento" class="centered"/>
+    </form>
 </body>
 </html>
